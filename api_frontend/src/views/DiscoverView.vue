@@ -3,19 +3,15 @@
     <navbar></navbar>
 
     <div class="discover-view">
-      <h2>Descubre Nuevas Canciones</h2>
-      <button @click="clearSongs">Limpiar Canciones</button>
+      <h2 class="lead letra">DESCUBRE NUEVAS CANCIONES</h2>
+     <button @click="clearSongs" class="clear-button">Limpiar Canciones</button> 
 
       <div v-if="songs.length === 0">
-        <p>No hay canciones disponibles.</p>
+        <p class="no-songs-message" style="color: white;">No hay canciones disponibles.</p>
       </div>
 
       <div v-else>
-        <div v-for="song in songs" :key="song.id" class="song-card">
-          <h3>{{ song.title }}</h3>
-          <p>{{ song.description }}</p>
-          <audio :src="getAudioUrl(song.audioUrl)" controls></audio>
-        </div>
+        <song-card v-for="song in songs" :key="song.id" :song="song" />
       </div>
     </div>
   </div>
@@ -23,10 +19,12 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue';
+import SongCard from '@/components/SongCard.vue';
 
 export default {
   components: {
     Navbar,
+    SongCard,
   },
   data() {
     return {
@@ -39,7 +37,7 @@ export default {
   methods: {
     async fetchSongs() {
       try {
-        const response = await fetch('http://192.168.1.97:3000/songs'); // Cambia la URL aquí
+        const response = await fetch('http://localhost:3000/songs');
         const data = await response.json();
         if (response.ok) {
           this.songs = data;
@@ -51,12 +49,9 @@ export default {
       }
     },
 
-    getAudioUrl(filename) {
-      return `http://192.168.1.97:3000/uploads/${filename}`; // Cambia la URL aquí
-    },
     async clearSongs() {
       try {
-        await fetch('http://192.168.1.97:3000/songs', { // Cambia la URL aquí
+        await fetch('http://localhost:3000/songs', {
           method: 'DELETE',
         });
 
@@ -77,13 +72,55 @@ export default {
 }
 
 .song-card {
+  display: flex;
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+.letra{
+    font-weight: bold;
+    color: white;
+    font-family: Tahoma;
+    font-size: 40px;
+    margin-top: 10%;
+    margin-bottom: 5%;
+}
+.song-info {
+  display: flex;
+}
 
-audio {
+.song-image img {
+  max-width: 100px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.song-details {
+  flex: 1;
+}
+
+.song-description {
+  color: #555;
+}
+
+.audio-player {
+  width: 100%;
   margin-top: 10px;
+}
+
+.clear-button {
+  background-color: #ff4b5c;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 5%;
+}
+
+.no-songs-message {
+  color: #555;
 }
 </style>

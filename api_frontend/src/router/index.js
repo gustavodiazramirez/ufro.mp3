@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '@/views/HomeView.vue';
 import UploadMusicView from '@/views/UploadMusicView.vue';
 import DiscoverView from '@/views/DiscoverView.vue';
+import LoginView from '@/views/LoginView.vue';
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     name: 'Discover',
     component: DiscoverView,
   },
+  {
+  path: '/iniciar-sesion',
+  name: 'LoginView',
+  component: LoginView,
+},
 ];
 
 const router = createRouter({

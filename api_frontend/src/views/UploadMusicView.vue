@@ -1,35 +1,39 @@
 <template>
   <div>
     <Navbar />
-      <div class="music-uploader-container">
-    <div class="music-uploader">
-      <h2>Subir Música</h2>
+    <div class="music-uploader-container">
+      <div class="music-uploader">
+        <h2>Subir Música</h2>
 
-      <form @submit.prevent="uploadMusic" class="music-form" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="audio">Archivo de Audio:</label>
-          <input type="file" id="audio" name="audio" required>
-        </div>
-        <div class="form-group">
-          <label for="title">Título:</label>
-          <input type="text" id="title" v-model="title" required>
-        </div>
-        <div class="form-group">
-          <label for="description">Descripción:</label>
-          <textarea id="description" v-model="description" required></textarea>
-        </div>
-        <div class="form-group">
-          <button type="submit">Subir Música</button>
-        </div>
-      </form>
+        <form @submit.prevent="uploadMusic" class="music-form" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="audio">Archivo de Audio:</label>
+            <input type="file" id="audio" name="audio" accept="audio/*" required>
+          </div>
+          <div class="form-group">
+            <label for="image">Imagen de Portada:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+          </div>
+          <div class="form-group">
+            <label for="title">Título:</label>
+            <input type="text" id="title" v-model="title" required>
+          </div>
+          <div class="form-group">
+            <label for="description">Descripción:</label>
+            <textarea id="description" v-model="description" required></textarea>
+          </div>
+          <div class="form-group">
+            <button type="submit">Subir Música</button>
+          </div>
+        </form>
 
-      <!-- Mostrar mensaje de éxito o error -->
-      <div v-if="uploadMessage">
-        <p>{{ uploadMessage }}</p>
-        <router-link to="/">Ir al Home</router-link>
+        <!-- Mostrar mensaje de éxito o error -->
+        <div v-if="uploadMessage">
+          <p>{{ uploadMessage }}</p>
+          <router-link to="/">Ir al Home</router-link>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -39,7 +43,6 @@ import 'dropzone/dist/dropzone.css';
 import { Howl } from 'howler';
 import Navbar from '@/components/Navbar.vue';
 
-
 export default {
   data() {
     return {
@@ -48,17 +51,16 @@ export default {
       audioUrl: '',
       uploadMessage: null,
       dropzoneInitialized: false,
-    }
+    };
   },
   components: {
-        Navbar,
-      },
+    Navbar,
+  },
   updated() {
     if (document.getElementById('dropzone') && !this.dropzoneInitialized) {
       const myDropzone = new Dropzone('#dropzone', {
-        // Usa la URL del servidor y el puerto donde está ejecutándose tu aplicación
-        url: 'http://localhost:3000/upload', // Cambia esto según tu configuración
-        acceptedFiles: 'audio/*',
+        url: 'http://localhost:3000/upload',
+        acceptedFiles: 'audio/*, image/*',
         addRemoveLinks: true,
         init: function () {
           this.on('complete', function (file) {
@@ -88,6 +90,7 @@ export default {
       formData.append('title', this.title);
       formData.append('description', this.description);
       formData.append('audio', document.getElementById('audio').files[0]);
+      formData.append('image', document.getElementById('image').files[0]);
 
       try {
         const response = await fetch('http://localhost:3000/upload', {

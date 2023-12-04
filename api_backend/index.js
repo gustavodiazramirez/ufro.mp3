@@ -9,15 +9,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ['http://192.168.1.141:8080', 'http://localhost:8080', 'http://192.168.1.97:8080'], // Agrega la IP de tu dispositivo móvil
+  origin: ['http://192.168.1.141:8080', 'http://localhost:8080', 'http://192.168.1.97:8080'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
+
 app.use(cors(corsOptions));
 
 const db = new sqlite3.Database(':memory:');
 
 db.serialize(() => {
-  db.run('CREATE TABLE canciones (id INTEGER PRIMARY KEY, title TEXT, description TEXT, audioUrl TEXT)');
+  db.run('CREATE TABLE canciones (id INTEGER PRIMARY KEY, title TEXT, description TEXT, audioUrl TEXT, imageUrl TEXT)');
 });
 
 const storage = multer.diskStorage({
@@ -28,16 +29,18 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}_${path.basename(file.originalname)}`);
   },
 });
+
 const upload = multer({ storage: storage });
 
-app.post('/upload', upload.single('audio'), (req, res) => {
+app.post('/upload', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image', maxCount: 1 }]), (req, res) => {
   try {
     const title = req.body.title;
     const description = req.body.description;
-    const audioFile = req.file.filename;
+    const audioFile = req.files['audio'][0].filename;
+    const imageFile = req.files['image'][0].filename;
 
-    db.run('INSERT INTO canciones (title, description, audioUrl) VALUES (?, ?, ?)',
-      [title, description, audioFile], async function (err) {
+    db.run('INSERT INTO canciones (title, description, audioUrl, imageUrl) VALUES (?, ?, ?, ?)',
+      [title, description, audioFile, imageFile], async function (err) {
         if (err) {
           console.error('Error al insertar en la base de datos:', err);
           res.status(500).json({ error: 'Error interno del servidor' });
@@ -46,10 +49,11 @@ app.post('/upload', upload.single('audio'), (req, res) => {
 
         res.json({
           message: 'Archivo subido con éxito',
-          audioUrl: `http://tu-direccion-ip-local:${PORT}/uploads/${audioFile}`,
+          audioUrl: `http://localhost:${PORT}/uploads/${audioFile}`,
+          imageUrl: `http://localhost:${PORT}/uploads/${imageFile}`,
           songId: this.lastID,
           title: title,
-          description: description
+          description: description,
         });
       });
 
