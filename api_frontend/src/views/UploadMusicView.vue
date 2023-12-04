@@ -1,5 +1,7 @@
 <template>
-  <div class="music-uploader-container">
+  <div>
+    <Navbar />
+      <div class="music-uploader-container">
     <div class="music-uploader">
       <h2>Subir Música</h2>
 
@@ -28,12 +30,15 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
 import Dropzone from 'dropzone';
 import 'dropzone/dist/dropzone.css';
 import { Howl } from 'howler';
+import Navbar from '@/components/Navbar.vue';
+
 
 export default {
   data() {
@@ -43,32 +48,37 @@ export default {
       audioUrl: '',
       uploadMessage: null,
       dropzoneInitialized: false,
-    };
+    }
   },
+  components: {
+        Navbar,
+      },
   updated() {
-    // Verifica si el elemento #dropzone está en el DOM y si Dropzone aún no se ha inicializado
     if (document.getElementById('dropzone') && !this.dropzoneInitialized) {
-      // Configuración de Dropzone
       const myDropzone = new Dropzone('#dropzone', {
-        url: 'https://6dfa-181-172-90-126.ngrok.io/upload',
+        // Usa la URL del servidor y el puerto donde está ejecutándose tu aplicación
+        url: 'http://localhost:3000/upload', // Cambia esto según tu configuración
         acceptedFiles: 'audio/*',
         addRemoveLinks: true,
         init: function () {
           this.on('complete', function (file) {
-            const response = JSON.parse(file.xhr.response);
-            if (response.message === 'Archivo subido con éxito') {
-              this.uploadMessage = response.message;
-            } else {
-              this.uploadMessage = 'Error al subir el archivo';
+            try {
+              const response = JSON.parse(file.xhr.response);
+              if (response.message === 'Archivo subido con éxito') {
+                this.uploadMessage = response.message;
+              } else {
+                this.uploadMessage = 'Error al subir el archivo';
+              }
+              const audioUrl = response.audioUrl;
+              const sound = new Howl({ src: [audioUrl] });
+              sound.play();
+            } catch (error) {
+              console.error('Error al procesar la respuesta del servidor:', error);
             }
-            const audioUrl = response.audioUrl;
-            const sound = new Howl({ src: [audioUrl] });
-            sound.play();
           });
         },
       });
 
-      // Marca Dropzone como inicializado
       this.dropzoneInitialized = true;
     }
   },
@@ -80,7 +90,7 @@ export default {
       formData.append('audio', document.getElementById('audio').files[0]);
 
       try {
-        const response = await fetch('https://6dfa-181-172-90-126.ngrok.io/upload', {
+        const response = await fetch('http://localhost:3000/upload', {
           method: 'POST',
           body: formData,
         });
@@ -90,13 +100,12 @@ export default {
 
         if (response.ok) {
           this.audioUrl = data.audioUrl;
-          this.title = data.title;  // Agrega esta línea para obtener el título
-          this.description = data.description;  // Agrega esta línea para obtener la descripción
+          this.title = data.title;
+          this.description = data.description;
           alert('Archivo subido con éxito');
-          // Aquí puedes redirigir al usuario a la página principal o a donde desees.
-          // Por ejemplo:
           this.$router.push('/');
         } else {
+          console.error('Error en la respuesta del servidor:', data);
           alert('Error al subir el archivo. Por favor, inténtalo de nuevo.');
         }
       } catch (error) {
@@ -108,7 +117,6 @@ export default {
 };
 </script>
 
- 
 <style scoped>
 .music-uploader-container {
   display: flex;

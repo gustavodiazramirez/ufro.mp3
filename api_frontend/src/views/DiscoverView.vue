@@ -39,7 +39,7 @@ export default {
   methods: {
     async fetchSongs() {
       try {
-        const response = await fetch('https://6dfa-181-172-90-126.ngrok.io/songs');
+        const response = await fetch('http://192.168.1.97:3000/songs'); // Cambia la URL aquí
         const data = await response.json();
         if (response.ok) {
           this.songs = data;
@@ -52,11 +52,11 @@ export default {
     },
 
     getAudioUrl(filename) {
-      return `https://6dfa-181-172-90-126.ngrok.io/uploads/${filename}`;
+      return `http://192.168.1.97:3000/uploads/${filename}`; // Cambia la URL aquí
     },
     async clearSongs() {
       try {
-        await fetch('https://6dfa-181-172-90-126.ngrok.io/songs', {
+        await fetch('http://192.168.1.97:3000/songs', { // Cambia la URL aquí
           method: 'DELETE',
         });
 

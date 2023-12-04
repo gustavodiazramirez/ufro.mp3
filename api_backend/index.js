@@ -3,22 +3,19 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const ngrok = require('ngrok');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'http://192.168.1.141:8080',
+  origin: ['http://192.168.1.141:8080', 'http://localhost:8080', 'http://192.168.1.97:8080'], // Agrega la IP de tu dispositivo móvil
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 };
-
 app.use(cors(corsOptions));
 
-// Conexión a la base de datos SQLite
 const db = new sqlite3.Database(':memory:');
 
-// Crea la tabla para almacenar las canciones
 db.serialize(() => {
   db.run('CREATE TABLE canciones (id INTEGER PRIMARY KEY, title TEXT, description TEXT, audioUrl TEXT)');
 });
@@ -31,7 +28,6 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}_${path.basename(file.originalname)}`);
   },
 });
-
 const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('audio'), (req, res) => {
@@ -50,7 +46,7 @@ app.post('/upload', upload.single('audio'), (req, res) => {
 
         res.json({
           message: 'Archivo subido con éxito',
-          audioUrl: `http://localhost:${PORT}/uploads/${audioFile}`,
+          audioUrl: `http://tu-direccion-ip-local:${PORT}/uploads/${audioFile}`,
           songId: this.lastID,
           title: title,
           description: description
@@ -63,23 +59,26 @@ app.post('/upload', upload.single('audio'), (req, res) => {
   }
 });
 
-// Nuevo endpoint para eliminar todas las canciones
 app.delete('/songs', (req, res) => {
   // Elimina todas las canciones de la base de datos
   db.run('DELETE FROM canciones', (err) => {
     if (err) {
-      console.error('Error al eliminar todas las canciones:', err);
+      console.error('Error al eliminar todas las canciones de la base de datos:', err);
       res.status(500).json({ error: 'Error interno del servidor' });
       return;
     }
 
-    res.json({ message: 'Todas las canciones eliminadas con éxito' });
+    // Elimina todos los archivos de la carpeta 'uploads'
+    const uploadsPath = path.join(__dirname, 'uploads');
+    fs.readdirSync(uploadsPath).forEach(file => {
+      const filePath = path.join(uploadsPath, file);
+      fs.unlinkSync(filePath);
+    });
+
+    res.json({ message: 'Todas las canciones y archivos eliminados con éxito' });
   });
 });
 
-app.use('/uploads', express.static('uploads'));
-
-// Endpoint para obtener todas las canciones
 app.get('/songs', (req, res) => {
   db.all('SELECT * FROM canciones', (err, rows) => {
     if (err) {
@@ -92,21 +91,8 @@ app.get('/songs', (req, res) => {
   });
 });
 
-// Configuración para escuchar en todas las interfaces de red
-const server = app.listen(PORT, '0.0.0.0', async () => {
-  console.log(`Servidor en http://0.0.0.0:${PORT}`);
+app.use('/uploads', express.static('uploads'));
 
-  // Inicia Ngrok después de que el servidor se inicia
-  try {
-    const ngrokUrl = await ngrok.connect(PORT);
-    console.log(`Ngrok URL: ${ngrokUrl}`);
-  } catch (error) {
-    console.error('Error al iniciar Ngrok:', error);
-  }
-});
-
-// Manejar la terminación del servidor y Ngrok al salir
-process.on('SIGTERM', () => {
-  server.close();
-  ngrok.kill();
+const server = app.listen(PORT, () => {
+  console.log(`Servidor en http://localhost:${PORT}`);
 });
