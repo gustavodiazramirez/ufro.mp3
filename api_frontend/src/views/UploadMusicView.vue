@@ -106,7 +106,7 @@ export default {
           this.title = data.title;
           this.description = data.description;
           alert('Archivo subido con éxito');
-          this.$router.push('/');
+          this.$router.push('/descubrir');
         } else {
           console.error('Error en la respuesta del servidor:', data);
           alert('Error al subir el archivo. Por favor, inténtalo de nuevo.');

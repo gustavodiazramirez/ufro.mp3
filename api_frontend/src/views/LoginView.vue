@@ -1,22 +1,23 @@
 <template>
+  <Navbar></Navbar>
     <div class="login-container">
       <div class="card">
-        <h1 class="display-4 letra">Iniciar Sesión</h1>
+        <h1 class="letra">INICIAR SESIÓN</h1>
   
         <form @submit.prevent="login">
           <div class="form-row">
             <div class="col form-group">
-              <label for="email">Correo Electrónico:</label>
+              <label for="email" style="font-weight: bold; font-size: 15px;">CORREO INSTITUCIONAL</label>
               <input type="email" id="email" v-model="email" class="form-control" required />
             </div>
   
             <div class="col form-group">
-              <label for="password">Contraseña:</label>
+              <label for="password" style="font-weight: bold; font-size: 15px;">CONTRASEÑA</label>
               <input type="password" id="password" v-model="password" class="form-control" required />
             </div>
           </div>
   
-          <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+          <button type="submit" class="btn btn-primary" style="font-weight: bold; font-size: 15px;">Iniciar Sesión</button>
         </form>
   
         <p class="create-account-msg">¿No tienes una cuenta? <router-link to="/registro">¡Crea una!</router-link></p>
@@ -24,7 +25,11 @@
     </div>
   </template>
   
+
+  
   <script>
+
+import Navbar from '@/components/Navbar.vue';
   export default {
     name: 'LoginView',
     data() {
@@ -33,9 +38,11 @@
         password: '',
       };
     },
+    components: {
+    Navbar,
+  },
     methods: {
       login() {
-        // Lógica para iniciar sesión (puedes implementarla según tu backend)
         console.log('Iniciando sesión con correo:', this.email, 'y contraseña:', this.password);
       },
     },
@@ -47,7 +54,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 90vh;
     background-color: #1c4c96;
   }
   
@@ -57,7 +64,10 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
   }
-  
+  .letra{ 
+    font-size: 70px;
+    font-weight: bold;
+  }
   .form-group {
     margin-bottom: 1.5rem;
   }
