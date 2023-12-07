@@ -11,7 +11,7 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/subir-musica',
+    path: '/subir-canción',
     name: 'UploadMusic',
     component: UploadMusicView,
   },

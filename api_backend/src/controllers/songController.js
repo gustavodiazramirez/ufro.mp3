@@ -19,27 +19,29 @@ exports.upload = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
+exports.deleteSong = async (req, res) => {
+  try {
+    const songId = req.params.id;
+
+    const message = await songService.deleteSong(songId);
+
+    res.json({ message });
+  } catch (error) {
+    console.error('Error al eliminar la canción:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 exports.deleteAllSongs = async (req, res) => {
   try {
-    const songs = await songService.getAllSongs();
-    for (const song of songs) {
-      const audioPath = path.join(__dirname, '../uploads', song.audioUrl);
-      const imagePath = path.join(__dirname, '../uploads', song.imageUrl);
-      
-      fs.unlinkSync(audioPath);
-      fs.unlinkSync(imagePath);
-    }
-
-    // Eliminar canciones de la base de datos
-    const result = await songService.deleteAllSongs();
-    
-    res.json({ message: result });
+    const message = await songService.deleteAllSongs();
+    res.json({ message });
   } catch (error) {
     console.error('Error al eliminar todas las canciones de la base de datos:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
-
 
 exports.getAllSongs = async (req, res) => {
   try {

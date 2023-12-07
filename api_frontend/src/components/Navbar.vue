@@ -12,7 +12,7 @@
           <router-link to="/descubrir" class="nav-link">Descubrir</router-link>
         </li>
         <li class="nav-item">
-          <router-link to="/subir-musica" class="nav-link">Subir Música</router-link>
+          <router-link to="/subir-canción" class="nav-link">Subir Canción</router-link>
         </li>
         <li class="nav-item">
           <router-link to="/iniciar-sesion" class="nav-link">Iniciar Sesión</router-link>

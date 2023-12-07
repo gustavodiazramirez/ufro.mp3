@@ -4,8 +4,6 @@
 
     <div class="discover-view">
       <h2 class="lead letra">DESCUBRE NUEVAS CANCIONES</h2>
-     <button @click="clearSongs" class="clear-button">Limpiar Canciones</button> 
-
       <div v-if="songs.length === 0">
         <p class="no-songs-message" style="color: white;">No hay canciones disponibles.</p>
       </div>

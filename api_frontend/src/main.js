@@ -10,6 +10,6 @@ import router from './router'; // Importa el enrutador desde el archivo router.j
 app.use(router);
 
 // Establecer el color de fondo para todo el documento
-document.body.style.backgroundColor = '#1c4c96'; // Cambia el color según tus preferencias
+document.body.style.backgroundColor = '#01356E'; // Cambia el color según tus preferencias
 
 app.mount('#app');

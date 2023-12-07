@@ -19,6 +19,18 @@ exports.insertSong = (title, description, audioUrl, imageUrl) => {
   });
 };
 
+exports.deleteSong = (id) => {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM canciones WHERE id = ?', [id], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
 exports.deleteAllSongs = () => {
   return new Promise((resolve, reject) => {
     db.run('DELETE FROM canciones', (err) => {
@@ -38,6 +50,18 @@ exports.getAllSongs = () => {
         reject(err);
       } else {
         resolve(rows);
+      }
+    });
+  });
+};
+
+exports.getSongById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM canciones WHERE id = ?', [id], (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
       }
     });
   });

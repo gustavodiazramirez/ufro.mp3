@@ -3,7 +3,6 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const fs = require('fs');
 
 const corsMiddleware = require('./middlewares/corsMiddleware.js');
 const songController = require('./controllers/songController.js');
@@ -32,6 +31,7 @@ const upload = multer({ storage: storage });
 
 app.post('/upload', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image', maxCount: 1 }]), songController.upload);
 
+app.delete('/songs/:id', songController.deleteSong); // Ruta para eliminar una canción específica
 app.delete('/songs', songController.deleteAllSongs);
 
 app.get('/songs', songController.getAllSongs);
